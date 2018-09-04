@@ -62,6 +62,26 @@ ellipses($('.out'), $('.in'));
 ```
 上面的是从后面逐字替换，反过来可以考虑从前面一个字一个字的赋值。如果 $in 只包含十几个字就溢出了，那么从前面一个一个的赋值就循环次数更少。
 
+```
+function projectNameAutoEllipsis(){
+	  var $parent = $('.leftbar-pname-span');
+		var $child  = $('.leftbar-pname-span').children('span');
+		var text    = $child.text();
+		var wList   = text.split('');
+		// 文本溢出
+		if( $child.height() > $parent.height() ){
+			$child.prop('title', text).text('');
+			$.each(wList, function(i, word){
+				$child.text( $child.text() + word );
+				if( $child.height() > $parent.height() ){
+					$child.text( $child.text().slice(0, -2) + '...' );
+					return false;
+				}
+			});
+		}
+};
+```
+
 ### 类二分查找
 从基础实现中我们可以发现，基本思路是没有问题的，只不过对于DOM的操作次数过多，而且关键点就是截取位置的确定。只要我们采取适当的方法来尽快获取截取位置就可以了。其中，截取位置的确定时通过判断，当每加一个字符时子元素高度是否会超出父元素高度。
 这种情况下，通过二分查找（不是准确的二分查找，但有一定的相似程度）确定截断位置再适合不过了。并且不会因为显示行数与文本的长度变化而大幅增加计算次数。
