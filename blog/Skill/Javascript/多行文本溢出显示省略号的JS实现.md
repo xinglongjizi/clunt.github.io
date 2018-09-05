@@ -62,7 +62,7 @@ ellipses($('.out'), $('.in'));
 ```
 上面的是从后面逐字替换，反过来可以考虑从前面一个字一个字的赋值。如果 $in 只包含十几个字就溢出了，那么从前面一个一个的赋值就循环次数更少。
 
-```
+```javascript
 function projectNameAutoEllipsis(){
 	  var $parent = $('.leftbar-pname-span');
 		var $child  = $('.leftbar-pname-span').children('span');
