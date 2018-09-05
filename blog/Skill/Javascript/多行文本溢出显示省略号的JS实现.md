@@ -62,25 +62,52 @@ ellipses($('.out'), $('.in'));
 ```
 上面的是从后面逐字替换，反过来可以考虑从前面一个字一个字的赋值。如果 $in 只包含十几个字就溢出了，那么从前面一个一个的赋值就循环次数更少。
 
-```javascript
+```js
 function projectNameAutoEllipsis(){
-	  var $parent = $('.leftbar-pname-span');
-		var $child  = $('.leftbar-pname-span').children('span');
-		var text    = $child.text();
-		var wList   = text.split('');
-		// 文本溢出
-		if( $child.height() > $parent.height() ){
-			$child.prop('title', text).text('');
-			$.each(wList, function(i, word){
-				$child.text( $child.text() + word );
-				if( $child.height() > $parent.height() ){
-					$child.text( $child.text().slice(0, -2) + '...' );
-					return false;
-				}
-			});
-		}
+	var $parent = $('.leftbar-pname-span');
+	var $child  = $('.leftbar-pname-span').children('span');
+	var text    = $child.text();
+	var wList   = text.split('');
+	// 文本溢出
+	if( $child.height() > $parent.height() ){
+		$child.prop('title', text).text('');
+		$.each(wList, function(i, word){
+			$child.text( $child.text() + word );
+			if( $child.height() > $parent.height() ){
+				$child.text( $child.text().slice(0, -2) + '...' );
+				return false;
+			}
+		});
+	}
 };
 ```
+由于上面代码中截取的最后两个字符中可能存在空格，那么就会导致用...代替截取的最后两个字符后还是溢出的。
+这时既可以再结合采用逐字从后截取的方式:
+```js
+function projectNameAutoEllipsis(){
+	var $parent = $('.leftbar-pname-span');
+	var $child  = $('.leftbar-pname-span').children('span');
+	var text    = $child.text();
+	var wList   = text.split('');
+	// 文本溢出
+	if( $child.height() > $parent.height() ){
+		$child.prop('title', text).text('');
+		$.each(wList, function(i, word){
+			$child.text( $child.text() + word );
+			if( $child.height() > $parent.height() ){
+				$child.text( $child.text().slice(0, -2) + '...' );
+				return false;
+			}
+		});
+		while( $child.height() > $parent.height() ){
+			$child.text( $child.text().slice(0, -4) + '...' );    // 此时字符串最后的字符是...占3个字符，因此3+1=4,即达到每次新的...替换一个有效字符
+		}
+	}
+};
+```
+
+
+
 
 ### 类二分查找
 从基础实现中我们可以发现，基本思路是没有问题的，只不过对于DOM的操作次数过多，而且关键点就是截取位置的确定。只要我们采取适当的方法来尽快获取截取位置就可以了。其中，截取位置的确定时通过判断，当每加一个字符时子元素高度是否会超出父元素高度。
